@@ -2,7 +2,8 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
 
-    <h3> {{ coefficient }}</h3>
+    <h2> Current token: {{ selectedToken }}</h2>
+    <h3> Sample Correlation {{ correlation }}</h3>
     <line-chart :chart-data="datacollection"/>
     <button @click="buttonTest('DAI')">DAI</button>
     <button @click="buttonTest('BAT')">BAT</button>
@@ -96,8 +97,10 @@ export default {
   props: { msg: String },
   data () {
     return {
-      coefficient: "dfdf",
-      datacollection: null
+      selectedToken: 'DAI',
+      correlation: "0",
+      datacollection: null,
+     
     }
   },
   created(){
@@ -141,18 +144,17 @@ export default {
         }
 
       this.datacollection = testdatacollection
-      axios.post("http://localhost:9000/getDump", {
-        token: 'DAI'
-      })
-        .then(result => {
-          console.dir(result)})
-      .catch(err => {
-        console.log('ahhhh!')
-        console.log(err)})
+      
     },
     fetchData (){},
     buttonTest(token){
-       const atestdatacollection = {
+        axios.post("https://thoken.herokuapp.com/getDump", {
+        token
+      })
+        .then(result => {
+          const data = result.data;
+   
+          const atestdatacollection = {
           //Data to be represented on x-axis
           labels: [...Array(30).keys()],
           datasets: [
@@ -165,7 +167,7 @@ export default {
               borderWidth: 1,
               pointBorderColor: '#249EBF',
               //Data to be represented on y-axis
-              data: exampleData.transfers.slice(1).reverse()
+              data: data.transfers
             },
             {
               label: 'Token Price',
@@ -176,13 +178,23 @@ export default {
               borderWidth: 1,
               pointBorderColor: '#249E0F',
               //Data to be represented on y-axis
-              data: exampleData.prices.slice(1).reverse()
+              data: data.prices
             }
           ]
 
         }
-        console.log(token)
-      this.datacollection = atestdatacollection
+        this.correlation = data.correlation
+        this.datacollection = atestdatacollection
+          
+          })
+      .catch(err => {
+
+        console.log(err)})
+
+
+
+
+       
     }
   }
    
