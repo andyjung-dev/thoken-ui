@@ -185,6 +185,7 @@ export default {
         }
         this.correlation = data.correlation
         this.datacollection = atestdatacollection
+        this.selectedToken = token
           
           })
       .catch(err => {
